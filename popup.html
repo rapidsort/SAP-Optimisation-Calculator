@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAP Optimisation Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>SAP Optimisation Calculator</h1>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pre-test">Pre-Test Analysis</button>
+      <button class="tab-btn" data-tab="post-test">Post-Test Analysis</button>
+      <button class="tab-btn" data-tab="help-tab">Help</button>
+    </div>
+
+    <div id="pre-test" class="tab-content active">
+      <!-- Mode Toggle -->
+      <div class="segmented-control">
+        <button class="segmented-btn active" data-mode="find-mde">Find MDE</button>
+        <button class="segmented-btn" data-mode="find-duration">Find Duration</button>
+      </div>
+
+      <div class="form-group">
+        <label for="weekly-traffic">Weekly Traffic (Users/Sessions)</label>
+        <input type="number" id="weekly-traffic" placeholder="e.g. 5000">
+      </div>
+
+      <div class="form-group">
+        <label for="weekly-conversions">Weekly Conversions</label>
+        <input type="number" id="weekly-conversions" placeholder="e.g. 500">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="variants">Variants</label>
+          <input type="number" id="variants" value="2">
+        </div>
+
+        <!-- Traffic Split Input (Visible only for 2 variants) -->
+        <div class="form-group" id="group-traffic-split">
+          <label for="traffic-split">Traffic Split (Challenger %)</label>
+          <input type="number" id="traffic-split" value="50" min="1" max="99">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Duration Input (Visible in Find MDE mode) -->
+        <div class="form-group" id="group-duration">
+          <label for="duration">Duration (Days)</label>
+          <input type="number" id="duration" value="30">
+        </div>
+
+        <!-- Desired MDE Input (Visible in Find Duration mode) -->
+        <div class="form-group hidden" id="group-desired-mde" style="display: none;">
+          <label for="desired-mde">Desired Lift (%)</label>
+          <input type="number" id="desired-mde" placeholder="e.g. 5">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="confidence">Confidence (%)</label>
+          <select id="confidence">
+            <option value="90">90%</option>
+            <option value="95" selected>95%</option>
+            <option value="99">99%</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="power">Power (%)</label>
+          <select id="power">
+            <option value="80" selected>80%</option>
+            <option value="90">90%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label>
+          Test Type
+          <!-- <span class="help-icon"
+            data-tooltip="One-Sided (Growth): Use if you only care if B > A. Requires less traffic.&#10;&#10;Two-Sided (Scientific): Use if you must know if B is different from A (better or worse). Standard for strict control.">?</span> -->
+        </label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="pre-test-type" value="one-sided"> One-Sided
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="pre-test-type" value="two-sided" checked> Two-Sided
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="calculate-btn" class="primary-btn">Calculate MDE</button>
+        <button id="clear-pre-test-btn" class="secondary-btn">Reset</button>
+      </div>
+
+      <div id="result-area" class="result-area hidden">
+        <div class="result-header">
+          <h3>Calculated Results</h3>
+          <button id="copy-btn" class="icon-btn" title="Copy to Clipboard">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path
+                d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" />
+            </svg>
+          </button>
+        </div>
+        <div id="output-text" class="formatted-output"></div>
+      </div>
+    </div>
+
+    <div id="post-test" class="tab-content">
+      <!-- Global Visitors Input -->
+      <div class="section-label">1. Users</div>
+      <div class="metric-row">
+        <div class="metric-inputs">
+          <div class="form-group">
+            <label>(A) Users</label>
+            <input type="number" id="control-visitors" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>(B) Users</label>
+            <input type="number" id="variant-visitors" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics Section -->
+      <div class="section-label" style="display:flex; justify-content:space-between; align-items:center;">
+        2. Metrics
+        <button id="add-metric-btn" class="secondary-btn small">+ Add Metric</button>
+      </div>
+
+      <div id="metrics-container">
+        <!-- Default Metric Row -->
+        <div class="metric-row">
+          <div class="metric-header">
+            <input type="text" class="metric-name" placeholder="Metric Name (e.g. Clicks)" value="Primary Metric">
+          </div>
+          <div class="metric-inputs">
+            <div class="form-group">
+              <label>(A) Conversions</label>
+              <input type="number" class="control-conv" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>(B) Conversions</label>
+              <input type="number" class="variant-conv" placeholder="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex: 1;">
+          <label for="post-test-confidence">Confidence (%)</label>
+          <select id="post-test-confidence">
+            <option value="90">90%</option>
+            <option value="95" selected>95%</option>
+            <option value="99">99%</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex: 1;"></div>
+        <!-- Spacer for alignment -->
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label>
+          Test Type
+          <!-- <span class="help-icon"
+            data-tooltip="One-Sided (Growth): Best for CRO to find winners fast.&#10;&#10;Two-Sided (Scientific): Best for strict academic or high-risk testing where detecting negative impact is equally important.">?</span> -->
+        </label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="test-type" value="one-sided"> One-Sided
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="test-type" value="two-sided" checked> Two-Sided
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="calculate-post-test-btn" class="primary-btn">Calculate Significance</button>
+        <button id="clear-post-test-btn" class="secondary-btn">Reset</button>
+      </div>
+
+      <div id="post-test-result-area" class="result-area hidden">
+        <div class="result-header">
+          <h3>Analysis Report</h3>
+          <button id="copy-post-test-btn" class="icon-btn" title="Copy Report">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path
+                d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" />
+            </svg>
+          </button>
+        </div>
+        <div id="post-test-output" class="formatted-output"></div>
+      </div>
+    </div>
+
+    <!-- Help Section -->
+    <div id="help-tab" class="tab-content">
+      <div class="help-content">
+        <h2>1. Installation</h2>
+        <ol>
+          <li><a
+              href="https://sap.sharepoint.com/:f:/t/TestLearnProjectTeam/IgAAXug2ARr9RKSRwWbpcGDkAcJYQS6seS_RD8xrSaPB7Hs?e=75V9dG"
+              style="text-decoration: none;"><code>Download
+              this repository</code></a> as a ZIP and extract it.</li>
+          <li>Open Google Chrome and navigate to <code>chrome://extensions/</code>.</li>
+          <li>Enable <strong>Developer mode</strong> using the toggle in the top-right corner.</li>
+          <li>Click <strong>Load unpacked</strong> and select the extracted folder.</li>
+        </ol>
+
+        <h2>2. Pre-Test Analysis</h2>
+        <p>Determine the <strong>Minimum Detectable Effect (MDE)</strong> or <strong>duration</strong> before starting a
+          test to ensure your experiment is powered correctly.</p>
+        <ul>
+          <li><strong>Find MDE:</strong> Calculate the lift you can realistically detect based on your current
+            traffic and a planned test duration.</li>
+          <li><strong>Find Duration:</strong> Calculate exactly how many days the test needs to run to detect a specific
+            <em>Desired Lift (%)</em>.
+          </li>
+          <li><strong>Traffic Split (%):</strong> Specify how much traffic goes to the <strong>Challenger (Variant
+              B)</strong>.
+            <br><em>Example: Entering '10' means a 90/10 split (90% Control, 10% Variant).
+              <br>Tip: A 50/50 split is the most "efficient" and will give you results fastest. Custom splits (like
+              90/10) are great for reducing risk but will require significantly more time/traffic.</em>
+          </li>
+        </ul>
+
+        <h2>3. Post-Test Analysis</h2>
+        <p>Analyze your results to determine if your changes had a <strong>statistically significant</strong> impact.
+        </p>
+        <ol>
+          <li>Enter total <strong>Users</strong> for both Control (A) and Challenger (B).</li>
+          <li>Add your <strong>Metrics</strong> (the tool supports multiple KPIs) and enter the conversion counts.</li>
+          <li>Select your <strong>Confidence</strong> level (95% is standard).</li>
+          <li>Choose a <strong>Test Type</strong>:
+            <ul>
+              <li><em>One-Sided:</em> Use if you only care if the Challenger is better than Control. Faster to reach
+                significance.</li>
+              <li><em>Two-Sided:</em> Use for strict scientific testing to see if there is <em>any</em> difference
+                (better
+                or worse).</li>
+            </ul>
+          </li>
+          <li>Click <strong>Calculate Significance</strong> for a verdict and recommended action.</li>
+        </ol>
+        <p><em>Tip: The tool automatically monitors <strong>Secondary Metrics</strong> as guardrails. If a secondary
+            metric shows a significant negative impact, the tool will issue a "Caution" even if your primary metric is
+            positive.</em></p>
+
+        <h2>4. Support</h2>
+        <p>If you need any help, please reach out to: <br>
+          <strong>Ravi Kumar Vanukuru</strong> (<a href="mailto:ravi.vanukuru@sap.com"
+            style="color: var(--accent-primary); text-decoration: none;">ravi.vanukuru@sap.com</a>) <br> <strong>Peters
+            Mark</strong> (<a href="mailto:mark.peters@sap.com"
+            style="color: var(--accent-primary); text-decoration: none;">mark.peters@sap.com</a>)
+        </p>
+        <p>or please visit or ShsrePoint site for more details: <a
+            href="https://sap.sharepoint.com/sites/124097/SitePages/A-B-Testing-&-Optimization.aspx"
+            style="color: var(--accent-primary); text-decoration: none;">SharePoint Site</a></p>
+
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

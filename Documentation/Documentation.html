@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+        }
+
+        pre,
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            background: rgba(27, 31, 35, 0.05);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+            margin-top: 24px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+    </style>
+    <title>SAP Optimisation Calculator Documentation</title>
+</head>
+
+<body>
+    <h1>SAP Optimisation Calculator - Documentation</h1><br>
+    <h2>Overview</h2>
+    <p>The SAP Optimisation Calculator is a Chrome extension designed to assist with A/B testing analysis. It provides
+        tools for both **Pre-Test planning** (calculating MDE and sample size) and **Post-Test analysis** (determining
+        statistical significance).</p><br>
+
+    <h2>1. Installation</h2>
+    <p>1. Download this repository.</p>
+    <p>2. Open Chrome -> Manage Extensions.</p>
+    <p>3. Enable Developer mode.</p>
+    <p>4. Click Load unpacked and select this folder.</p>
+
+    <h3>2. Pre-Test Analysis</h3><br><img src="1.png" alt="Pre-Test Analysis - Find MDE"><br><br>
+    <p></p>Determine the Minimum Detectable Effect (MDE) and sample size required before starting a test.
+    How to Use:</p>
+    <ul>
+        <li>Open the extension and ensure you are on the Pre-Test Analysis tab.</li>
+        <li>Enter your Weekly Traffic and Weekly Conversions (e.g., 5000 visitors, 250 conversions).</li>
+        <li>Adjust the Variants, Duration, Confidence, and Power if needed.</li>
+        <li>Click Calculate MDE.</li>
+    </ul>
+    <p><strong>Output:</strong></p>
+    <ul>
+        <li>Target Conversion Rate: The minimum rate the challenger needs to reach.</li>
+        <li>Relative MDE: The percentage lift required (e.g., "Requires 15.4% relative lift").</li>
+    </ul>
+
+
+
+    <h3>2. Post-Test Analysis</h3><br>
+    <img src="2.png" alt="Post-Test Analysis - Find MDE"><br><br>
+    <br><br>
+    <p>Analyze the results of an A/B test to determine statistical significance.</p>
+    <p><strong>How to Use:</strong></p>
+    <ul>
+        <li>Switch to the Post-Test Analysis tab.</li>
+        <li>Enter the Unique Visitors for both Control and Challenger.</li>
+        <li>Add metrics (e.g., "Signups") and enter Conversions for each variation.</li>
+        <li>Select your Confidence level (e.g., 90%).</li>
+        <li>Choose the Test Type:</li>
+        <li>One-Sided (Growth): Checks if Challenger > Control (Standard).</li>
+        <li>Two-Sided (Scientific): Checks for any difference.</li>
+        <li>Click Calculate Significance.</li>
+    </ul>
+    <p><strong>Output:</strong></p>
+    <ul>
+        <li>p-value: The probability that the result is due to chance (e.g., `p = 0.035`).</li>
+        <li>Verdict: A clear recommendation on whether the result is significant.</li>
+        <li>Confidence Interval: The range of likely conversion rates.</li>
+    </ul>
+
+
+
+</body>
+
+</html>
